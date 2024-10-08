@@ -31,6 +31,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <div className="my-8 flex w-full justify-center">
+          <a
+            className="font-mono text-sm text-muted-foreground"
+            href="https://www.cueva.io/"
+            target="_blank"
+            referrerPolicy="no-referrer"
+          >
+            made by cueva.io
+          </a>
+        </div>
       </body>
     </html>
   );

@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
@@ -29,7 +30,8 @@ import { nanoid } from '@/lib/nanoid';
 import { cn } from '@/lib/utils';
 
 import { ListingDescription } from './description';
-import { Map } from './map';
+
+const DynamicMapWithNoSSR = dynamic(() => import('./map'), { ssr: false });
 
 function capitalize(s: string) {
   const text = s
@@ -162,7 +164,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
               <div className="space-y-4">
                 <h3 className="font-semibold">Location</h3>
-                <Map
+                <DynamicMapWithNoSSR
                   latitude={listing.latitude!}
                   longitude={listing.longitude!}
                 />

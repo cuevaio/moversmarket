@@ -1,1 +1,2 @@
-bunx husky init
+bun format
+git add .

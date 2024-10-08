@@ -39,9 +39,15 @@ export const listings = pgTable('listings', {
   tenureType: tenureTypeEnum('tenure_type'),
   description: text('description'),
   estateAgentDisplayName: varchar('estate_agent_display_name', { length: 255 }),
-  tags: jsonb('tags').$type<string[]>(),
-  images: jsonb('images').$type<{ relativeUrl: string }[]>().notNull(),
-  floorPlans: jsonb('floor_plans').$type<{ relativeUrl: string }[]>(),
+  tags: jsonb('tags').$type<string[]>().notNull().default([]),
+  images: jsonb('images')
+    .$type<{ relativeUrl: string }[]>()
+    .notNull()
+    .default([]),
+  floorPlans: jsonb('floor_plans')
+    .$type<{ relativeUrl: string }[]>()
+    .notNull()
+    .default([]),
   longitude: real('longitude'),
   latitude: real('latitude'),
   createdAt: timestamp('created_at').defaultNow().notNull(),

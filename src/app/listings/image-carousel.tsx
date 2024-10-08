@@ -36,7 +36,7 @@ export function ImageCarousel({
             }
             alt={`Property image ${currentImageIndex + 1}`}
             className="object-cover"
-            fill={true}
+            fill
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
           />

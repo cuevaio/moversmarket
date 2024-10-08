@@ -24,11 +24,11 @@ export const Map = ({
     <MapContainer
       center={position}
       zoom={13}
-      style={{ height: '400px', width: '100%' }}
+      style={{ height: '400px', width: '100%', borderRadius: '0.75rem' }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       />
       <Marker position={position} icon={houseIcon} />
     </MapContainer>

@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
-import { DotIcon, FlagIcon, Grip, InfoIcon, X } from 'lucide-react';
+import { DotIcon, FlagIcon, Grip, InfoIcon } from 'lucide-react';
 
-import { db } from '@/db';
+import { db, schema } from '@/db';
 
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
@@ -13,6 +14,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { RightMoveLogo } from '@/components/ui/icons';
 import { Separator } from '@/components/ui/separator';
@@ -43,16 +51,17 @@ export default async function Page({ params }: { params: { id: string } }) {
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
       <div className="relative">
-        <div className="grid grid-cols-4 gap-2 overflow-hidden rounded-xl">
-          <div className="col-span-2 row-span-2 aspect-square lg:aspect-auto">
+        <div className="grid h-[30rem] grid-cols-4 grid-rows-2 gap-4 overflow-hidden rounded-xl">
+          <div className="relative col-span-2 row-span-2">
             <Image
               src={
                 'https://media.rightmove.co.uk/' + listing.images[0].relativeUrl
               }
               alt="Image"
-              width={800}
-              height={600}
+              fill
               className="h-full w-full object-cover"
+              placeholder="blur"
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
             />
           </div>
           {listing.images.slice(1, 5).map((image, index) => (
@@ -63,6 +72,8 @@ export default async function Page({ params }: { params: { id: string } }) {
                 width={400}
                 height={300}
                 className="h-full w-full object-cover"
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
               />
             </div>
           ))}
@@ -79,9 +90,6 @@ export default async function Page({ params }: { params: { id: string } }) {
           </DialogTrigger>
           <DialogContent className="h-[90vh] w-full max-w-7xl p-0">
             <div className="relative h-full overflow-y-auto">
-              <Button variant="ghost" className="absolute right-4 top-4 z-10">
-                <X className="h-6 w-6" />
-              </Button>
               <div className="grid grid-cols-2 gap-4 p-4">
                 {listing.images.map((image, index) => (
                   <div key={index} className="relative aspect-video">
@@ -90,6 +98,14 @@ export default async function Page({ params }: { params: { id: string } }) {
                       alt="Image"
                       fill
                       className="rounded-lg object-cover"
+                    />
+                    <a
+                      className="absolute inset-0"
+                      href={
+                        'https://media.rightmove.co.uk/' + image.relativeUrl
+                      }
+                      target="_blank"
+                      referrerPolicy="no-referrer"
                     />
                   </div>
                 ))}
@@ -120,36 +136,88 @@ export default async function Page({ params }: { params: { id: string } }) {
             </p>
             <p className="font-mono">{listing.postcode}</p>
           </div>
+
           <Separator />
+
           <div>
             <ListingDescription description={listing.description!} />
           </div>
 
-          <Separator />
+          {listing.tags.length > 0 && (
+            <>
+              <Separator />
 
-          <div className="space-y-4">
-            <h3 className="font-semibold">Key features</h3>
-            <ol className="list grid list-inside list-disc grid-cols-2 gap-x-8 gap-y-2 text-sm">
-              {listing.tags!.map((t) => (
-                <li key={nanoid()} className="">
-                  {capitalize(t)}
-                </li>
-              ))}
-            </ol>
-          </div>
+              <div className="space-y-4">
+                <h3 className="font-semibold">Key features</h3>
+                <ol className="list grid list-inside list-disc grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                  {listing.tags.map((t) => (
+                    <li key={nanoid()} className="">
+                      {capitalize(t)}
+                    </li>
+                  ))}
+                </ol>
+              </div>
 
-          <Separator />
+              <Separator />
 
-          <div className="space-y-4">
-            <h3 className="font-semibold">Location</h3>
-            <Map latitude={listing.latitude!} longitude={listing.longitude!} />
-          </div>
+              <div className="space-y-4">
+                <h3 className="font-semibold">Location</h3>
+                <Map
+                  latitude={listing.latitude!}
+                  longitude={listing.longitude!}
+                />
+              </div>
+            </>
+          )}
+
+          {listing.floorPlans.length > 0 && (
+            <>
+              <Separator />
+
+              <div className="space-y-4">
+                <h3 className="font-semibold">Floor plans</h3>
+
+                <Carousel>
+                  <CarouselContent className="bg-transparent">
+                    {listing.floorPlans.map((p) => (
+                      <CarouselItem key={p.relativeUrl}>
+                        <div className="relative overflow-hidden rounded-xl border">
+                          <AspectRatio ratio={16 / 9}>
+                            <Image
+                              src={
+                                'https://media.rightmove.co.uk/' + p.relativeUrl
+                              }
+                              alt="plans"
+                              fill
+                              className="object-cover"
+                            />
+                          </AspectRatio>
+                          <a
+                            className="absolute inset-0"
+                            href={
+                              'https://media.rightmove.co.uk/' + p.relativeUrl
+                            }
+                            target="_blank"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
+              </div>
+            </>
+          )}
         </div>
         <div className="sticky top-16 h-max space-y-4">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl">£{listing.price}</CardTitle>
+                <CardTitle className="text-2xl">
+                  £{listing.price.toLocaleString()}
+                </CardTitle>
 
                 <div className="flex items-center text-sm text-muted-foreground">
                   {listing.tenureType}
@@ -197,4 +265,12 @@ export default async function Page({ params }: { params: { id: string } }) {
       </div>
     </div>
   );
+}
+
+export async function generateStaticParams() {
+  const listings = await db
+    .select({ id: schema.listings.id })
+    .from(schema.listings);
+
+  return listings;
 }

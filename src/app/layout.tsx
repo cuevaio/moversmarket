@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-[150dvh] antialiased [scrollbar-gutter:stable]`}
       >
         {children}
         <div className="my-8 flex w-full justify-center">

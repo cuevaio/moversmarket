@@ -72,3 +72,7 @@
     @apply bg-background font-sans text-foreground;
   }
 }
+
+.leaflet-control-attribution.leaflet-control > :nth-child(-n + 2) {
+  display: none;
+}

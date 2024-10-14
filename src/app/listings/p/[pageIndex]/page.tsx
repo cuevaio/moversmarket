@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 import { db } from '@/db';
 
@@ -8,14 +9,25 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 import { cn } from '@/lib/utils';
 
-import { ImageCarousel } from './image-carousel';
-import { Pagination } from './pagination';
+import { ImageCarousel } from '../../image-carousel';
+import { Pagination } from '../../pagination';
 
-export const dynamic = 'force-static';
+export function generateStaticParams() {
+  return new Array(150).fill(0).map((_, i) => ({ pageIndex: String(i) }));
+}
 
-export default async function Page() {
+export default async function Page({
+  params,
+}: {
+  params: { pageIndex: string };
+}) {
+  const pageIndex = parseInt(params.pageIndex);
+  if (isNaN(pageIndex)) return notFound();
+  if (pageIndex < 0 || pageIndex > 149) return notFound();
+
   const listings = await db.query.listings.findMany({
     limit: 21,
+    offset: 21 * pageIndex,
   });
 
   return (

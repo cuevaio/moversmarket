@@ -2,7 +2,14 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
-import { DotIcon, FlagIcon, Grip, InfoIcon } from 'lucide-react';
+import {
+  CalendarPlusIcon,
+  DotIcon,
+  FlagIcon,
+  Grip,
+  InfoIcon,
+  WaypointsIcon,
+} from 'lucide-react';
 
 import { db, schema } from '@/db';
 
@@ -29,6 +36,7 @@ import { Separator } from '@/components/ui/separator';
 import { nanoid } from '@/lib/nanoid';
 import { cn } from '@/lib/utils';
 
+import { AskAI } from './ask-ai';
 import { ListingDescription } from './description';
 
 const DynamicMapWithNoSSR = dynamic(() => import('./map'), { ssr: false });
@@ -51,9 +59,27 @@ export default async function Page({ params }: { params: { id: string } }) {
   if (!listing) return notFound();
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
+    <div className="space-y-6">
+      <div className="sticky top-[4.075rem] z-10 flex flex-col bg-background py-2 sm:hidden">
+        <h1 className="text-2xl font-medium">{listing.address}</h1>
+        <p>
+          {listing.bedrooms && (
+            <>
+              {listing.bedrooms} {listing.bedrooms > 1 ? 'bedroom' : 'bedrooms'}
+            </>
+          )}
+          {listing.bathrooms && (
+            <>
+              {listing.bedrooms && <DotIcon className="inline size-3" />}
+              {listing.bathrooms}{' '}
+              {listing.bathrooms > 1 ? 'bathrooms' : 'bathroom'}{' '}
+            </>
+          )}
+        </p>
+        <p className="font-mono">{listing.postcode}</p>
+      </div>
       <div className="relative">
-        <div className="grid h-[30rem] grid-cols-4 grid-rows-2 gap-4 overflow-hidden rounded-xl">
+        <div className="grid h-[15rem] grid-cols-4 grid-rows-2 gap-4 overflow-hidden rounded-xl sm:h-[30rem]">
           <div className="relative col-span-2 row-span-2">
             <Image
               src={
@@ -117,9 +143,9 @@ export default async function Page({ params }: { params: { id: string } }) {
         </Dialog>
       </div>
 
-      <div className="flex space-x-24">
+      <div className="flex flex-col-reverse gap-8 sm:flex-row sm:gap-24">
         <div className="space-y-6">
-          <div>
+          <div className="hidden sm:flex sm:flex-col">
             <h1 className="text-2xl font-medium">{listing.address}</h1>
             <p>
               {listing.bedrooms && (
@@ -212,8 +238,16 @@ export default async function Page({ params }: { params: { id: string } }) {
               </div>
             </>
           )}
+
+          <Button
+            variant="link"
+            className="flex w-full items-center text-muted-foreground sm:hidden"
+          >
+            <FlagIcon className="mr-2 size-4" fill="currentColor" /> Report this
+            listing
+          </Button>
         </div>
-        <div className="sticky top-16 h-max space-y-4">
+        <div className="h-max space-y-4 sm:sticky sm:top-20">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -244,23 +278,37 @@ export default async function Page({ params }: { params: { id: string } }) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <a
-                className={cn(
-                  buttonVariants({ variant: 'outline' }),
-                  'flex space-x-1 px-20',
-                )}
-                href={`https://www.rightmove.co.uk/properties/${listing.rightmoveId}`}
-                target="_blank"
-                referrerPolicy="no-referrer"
-              >
-                <span className="font-black">View on</span>
-                <RightMoveLogo className="size-[5.5rem]" />
-              </a>
-              <p></p>
+              <div className="space-y-2">
+                <a
+                  className={cn(
+                    buttonVariants({ variant: 'outline' }),
+                    'flex space-x-1 px-20',
+                  )}
+                  href={`https://www.rightmove.co.uk/properties/${listing.rightmoveId}`}
+                  target="_blank"
+                  referrerPolicy="no-referrer"
+                >
+                  <span className="font-black">View on</span>
+                  <RightMoveLogo className="size-[5.5rem]" />
+                </a>
+                <Button className="w-full font-bold" variant="outline">
+                  Promote
+                  <WaypointsIcon className="ml-2 size-4" />
+                </Button>
+                <Button className="w-full font-bold" variant="outline">
+                  Book
+                  <CalendarPlusIcon className="ml-2 size-4" />
+                </Button>
+
+                <AskAI />
+              </div>
             </CardContent>
           </Card>
-          <Button variant="link" className="w-full text-muted-foreground">
-            <FlagIcon className="mr-4 size-4" fill="currentColor" /> Report this
+          <Button
+            variant="link"
+            className="hidden w-full items-center text-muted-foreground sm:flex"
+          >
+            <FlagIcon className="mr-2 size-4" fill="currentColor" /> Report this
             listing
           </Button>
         </div>

@@ -6,6 +6,7 @@ import './globals.css';
 
 import Link from 'next/link';
 
+import { Analytics } from '@vercel/analytics/react';
 import { CompassIcon, TagIcon } from 'lucide-react';
 
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -78,6 +79,7 @@ export default function RootLayout({
             made by cueva.io
           </a>
         </div>
+        <Analytics />
       </body>
     </html>
   );
